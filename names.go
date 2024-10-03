@@ -26,6 +26,7 @@ type Names struct {
 	// an errorSchema.
 	goTypeToAvroType sync.Map
 	goTypeToEncoder  sync.Map
+	progCache        programCache
 }
 
 var builtinTypes = map[string]bool{

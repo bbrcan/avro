@@ -32,10 +32,18 @@ func (names *Names) Unmarshal(data []byte, x interface{}, wType *Type) (*Type, e
 	if t.Kind() != reflect.Ptr {
 		return nil, fmt.Errorf("destination is not a pointer %s", t)
 	}
-	prog, err := compileDecoder(names, t.Elem(), wType)
-	if err != nil {
-		return nil, err
+
+	prog, _ := names.progCache.Get(wType.String())
+	if prog == nil {
+		var err error
+		prog, err = compileDecoder(names, t.Elem(), wType)
+		if err != nil {
+			return nil, err
+		}
+
+		names.progCache.Set(wType.String(), prog)
 	}
+
 	v = v.Elem()
 	return unmarshal(nil, data, prog, v)
 }
